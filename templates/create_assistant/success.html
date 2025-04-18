@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Assistant Created{% endblock %}
+{% block header %}Assistant Created Successfully{% endblock %}
+
+{% block content %}
+<div class="progress-steps mb-4">
+    <div class="step completed">1. Business Info</div>
+    <div class="step completed">2. User Details</div>
+    <div class="step completed">3. Phone & Voice</div>
+</div>
+
+<div class="card">
+    <div class="alert alert-success">
+        <p>{{ message }}</p>
+    </div>
+    <p>Your AI assistant has been created and is ready to use.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Return to Dashboard</a>
+</div>
+{% endblock %}

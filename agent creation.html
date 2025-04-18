@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElevenLabs API Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 120px;
+            font-family: monospace;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>ElevenLabs Agent Creator</h1>
+    
+    <div class="form-group">
+        <label for="apiKey">ElevenLabs API Key:</label>
+        <input type="text" id="apiKey" placeholder="sk_...">
+    </div>
+    
+    <div class="form-group">
+        <label for="agentName">Agent Name:</label>
+        <input type="text" id="agentName" value="My Custom Agent">
+    </div>
+    
+    <div class="form-group">
+        <label for="firstMessage">First Message:</label>
+        <input type="text" id="firstMessage" value="Hello! How can I assist you today?">
+    </div>
+    
+    <div class="form-group">
+        <label for="prompt">Custom Prompt:</label>
+        <textarea id="prompt">You are a helpful assistant powered by ElevenLabs and Gemini.</textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="actions">Actions (JSON format):</label>
+        <textarea id="actions">[
+  {
+    "name": "example_action",
+    "description": "An example action",
+    "parameters": [
+      {
+        "name": "param1",
+        "description": "First parameter",
+        "type": "string",
+        "required": true
+      }
+    ],
+    "return": {
+      "description": "Example return value",
+      "type": "string"
+    }
+  }
+]</textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="platformTools">Platform Tools (JSON format):</label>
+        <textarea id="platformTools">[
+  {
+    "type": "browser",
+    "tool_config": {
+      "search_when_no_system_prompt_tool_enabled": true
+    }
+  }
+]</textarea>
+    </div>
+    
+    <button id="submitBtn">Create Agent</button>
+    
+    <div id="response"></div>
+    
+    <div class="code-block">
+        <h3>Equivalent curl command:</h3>
+        <pre id="curlCommand"></pre>
+    </div>
+    
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const apiKey = "sk_a25b9c0aeb6381cc728ac97f54113fae13a52a4f72d88b2b";
+            const firstMessage = document.getElementById('firstMessage').value;
+            const prompt = document.getElementById('prompt').value;
+            
+            if (!apiKey) {
+                alert('Please enter your ElevenLabs API key');
+                return;
+            }
+            
+            // Parse actions from the JSON input
+            let actions = [];
+            try {
+                actions = JSON.parse(document.getElementById('actions').value);
+            } catch (e) {
+                alert('Invalid JSON in actions field. Please check the format.');
+                return;
+            }
+            
+            // Parse platform tools from the JSON input
+            let platformTools = [];
+            try {
+                platformTools = JSON.parse(document.getElementById('platformTools').value);
+            } catch (e) {
+                alert('Invalid JSON in platform tools field. Please check the format.');
+                return;
+            }
+            
+            // Get agent name
+            const agentName = document.getElementById('agentName').value;
+            
+            // Build the request payload
+            const payload = {
+                agent_name: agentName,
+                conversation_config: {
+                    agent: {
+                        first_message: firstMessage,
+                        prompt: {
+                            prompt: prompt,
+                            llm: "gemini-1.0-pro"
+                        },
+                        actions: actions
+                    }
+                },
+                platform_settings: {
+                    overrides: {
+                        enable_conversation_initiation_client_data_from_webhook: true
+                    }
+                },
+                platform_tools: platformTools
+            };
+            
+            // Show curl command
+            const curlCmd = `curl -X POST https://api.elevenlabs.io/v1/convai/agents/create \\
+     -H "xi-api-key: ${apiKey}" \\
+     -H "Content-Type: application/json" \\
+     -d '${JSON.stringify(payload, null, 2)}'`;
+            
+            document.getElementById('curlCommand').textContent = curlCmd;
+            
+            // Make the API request
+            fetch('https://api.elevenlabs.io/v1/convai/agents/create', {
+                method: 'POST',
+                headers: {
+                    'xi-api-key': apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const responseElement = document.getElementById('response');
+                responseElement.textContent = JSON.stringify(data, null, 2);
+                responseElement.style.display = 'block';
+            })
+            .catch(error => {
+                const responseElement = document.getElementById('response');
+                responseElement.textContent = `Error: ${error.message}`;
+                responseElement.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>

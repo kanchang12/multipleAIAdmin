@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks Management{% endblock %}
+{% block header %}Tasks Management{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <h2>Create New Task</h2>
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="title">Task Title</label>
+                    <input type="text" id="title" name="title" class="form-control" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="assigned_to">Assign To</label>
+                    <select id="assigned_to" name="assigned_to" class="form-control">
+                        <option value="">-- Select User --</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority" class="form-control">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="due_date">Due Date</label>
+                    <input type="date" id="due_date" name="due_date" class="form-control">
+                </div>
+            </div>
+        </div>
+        <button type="submit" name="create_task" class="btn btn-primary">Create Task</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Manage Tasks</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Assigned To</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Due Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.id }}</td>
+                <td>{{ task.title }}</td>
+                <td>{{ task.assigned_to.username if task.assigned_to else 'Unassigned' }}</td>
+                <td>{{ task.priority|capitalize }}</td>
+                <td>
+                    <select class="form-control task-status-select" data-task-id="{{ task.id }}">
+                        <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                        <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                </td>
+                <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'No deadline' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No tasks found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelects = document.querySelectorAll('.task-status-select');
+    statusSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const taskId = this.getAttribute('data-task-id');
+            const newStatus = this.value;
+            
+            fetch("{{ url_for('update_task_status') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `task_id=${taskId}&status=${newStatus}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success fixed-top text-center';
+                    alert.textContent = 'Task status updated!';
+                    document.body.appendChild(alert);
+                    setTimeout(() => alert.remove(), 3000);
+                } else {
+                    this.value = this.getAttribute('data-previous-status') || '';
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-danger fixed-top text-center';
+                    alert.textContent = data.message || 'Update failed';
+                    document.body.appendChild(alert);
+                    setTimeout(() => alert.remove(), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.value = this.getAttribute('data-previous-status') || '';
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

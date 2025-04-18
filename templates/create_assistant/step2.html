@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Create Assistant - Step 2{% endblock %}
+{% block header %}Step 2: Create User Account{% endblock %}
+
+{% block content %}
+<div class="progress-steps mb-4">
+    <div class="step completed">1. Business Info</div>
+    <div class="step active">2. User Details</div>
+    <div class="step">3. Phone & Voice</div>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="assistant_name">Assistant Name</label>
+                    <input type="text" class="form-control" id="assistant_name" name="assistant_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="first_message">First Message</label>
+                    <input type="text" class="form-control" id="first_message" name="first_message" 
+                           value="Hello! How can I assist you today?">
+                </div>
+                <div class="form-group">
+                    <label for="model">AI Model</label>
+                    <select class="form-control" id="model" name="model">
+                        {% for model in models %}
+                            <option value="{{ model.id }}">{{ model.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="prompt">Generated Prompt (You can edit this)</label>
+                    <textarea class="form-control" id="prompt" name="prompt" rows="15">{{ prompt }}</textarea>
+                </div>
+                <div id="word-count" class="text-muted">
+                    {{ prompt|wordcount }} words
+                </div>
+            </div>
+        </div>
+        <button type="submit" name="create_user" class="btn btn-primary">Next: Phone & Voice</button>
+    </form>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const promptTextarea = document.getElementById('prompt');
+    if (promptTextarea) {
+        promptTextarea.addEventListener('input', function() {
+            const wordCount = this.value.split(/\s+/).filter(Boolean).length;
+            document.getElementById('word-count').textContent = wordCount + ' words';
+        });
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

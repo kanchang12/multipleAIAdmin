@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Phone Number</title>
+    <style>
+        /* Same styles as before */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4c51bf;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #434190;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .code-block {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Phone Number</h1>
+
+    <div class="container">
+        <h2>Step 1: Create Phone Number</h2>
+        
+        <div class="form-group">
+            <label for="apiKey1">ElevenLabs API Key:</label>
+            <input type="text" id="apiKey1" placeholder="sk_...">
+        </div>
+        
+        <div class="form-group">
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" id="phoneNumber" placeholder="+1234567890">
+        </div>
+        
+        <div class="form-group">
+            <label for="label">Label:</label>
+            <input type="text" id="label" placeholder="My Phone Number">
+        </div>
+        
+        <div class="form-group">
+            <label for="sid">SID:</label>
+            <input type="text" id="sid" placeholder="Enter SID">
+        </div>
+        
+        <div class="form-group">
+            <label for="token">Token:</label>
+            <input type="text" id="token" placeholder="Enter token">
+        </div>
+        
+        <button id="createPhoneBtn">Create Phone Number</button>
+        <div id="phoneResponse" class="response"></div>
+
+        <div class="code-block">
+            <h3>Equivalent curl command:</h3>
+            <pre id="phoneCurlCommand"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Create Phone Number Logic
+        document.getElementById('createPhoneBtn').addEventListener('click', function() {
+            const apiKey = document.getElementById('apiKey1').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const label = document.getElementById('label').value;
+            const sid = document.getElementById('sid').value;
+            const token = document.getElementById('token').value;
+            
+            if (!apiKey) {
+                alert('Please enter your ElevenLabs API key');
+                return;
+            }
+            
+            // Build request payload
+            const payload = {
+                phone_number: phoneNumber,
+                label: label,
+                sid: sid,
+                token: token
+            };
+            
+            // Update curl command display
+            const curlCmd = `curl -X POST https://api.elevenlabs.io/v1/convai/phone-numbers/create \\
+     -H "xi-api-key: ${apiKey}" \\
+     -H "Content-Type: application/json" \\
+     -d '${JSON.stringify(payload, null, 2)}'`;
+            
+            document.getElementById('phoneCurlCommand').textContent = curlCmd;
+            
+            // Make API request
+            fetch('https://api.elevenlabs.io/v1/convai/phone-numbers/create', {
+                method: 'POST',
+                headers: {
+                    'xi-api-key': apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const responseElement = document.getElementById('phoneResponse');
+                responseElement.textContent = JSON.stringify(data, null, 2);
+                responseElement.style.display = 'block';
+            })
+            .catch(error => {
+                const responseElement = document.getElementById('phoneResponse');
+                responseElement.textContent = `Error: ${error.message}`;
+                responseElement.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>

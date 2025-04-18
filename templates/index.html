@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElevenLabs Integration Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #7209b7;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .card h2 {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card p {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            min-height: 3rem;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6c757d;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: var(--dark-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .modal-content {
+                margin: 20% auto;
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ElevenLabs Integration Dashboard</h1>
+            <p class="subtitle">Access all your voice assistant configuration tools in one place</p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">1</div>
+                    <h2>Agent Creator</h2>
+                </div>
+                <p>Create a new ElevenLabs AI agent with custom prompt, actions, and platform tools.</p>
+                <div class="card-actions">
+                    <a href="agent-creator.html" class="btn btn-full" target="_blank">Open Tool</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">2</div>
+                    <h2>Phone Number Integration</h2>
+                </div>
+                <p>Complete setup for phone number creation, agent connection, and talk-to link generation.</p>
+                <div class="card-actions">
+                    <a href="phone-integration.html" class="btn btn-full" target="_blank">Open Tool</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">3</div>
+                    <h2>Voice Assistant Prompt Generator</h2>
+                </div>
+                <p>Create customized prompts for industry-specific voice assistants.</p>
+                <div class="card-actions">
+                    <a href="/" class="btn btn-full">Open Tool</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">4</div>
+                    <h2>Appointment Availability Tool</h2>
+                </div>
+                <p>Configure the appointment availability checking tool for your voice assistant.</p>
+                <div class="card-actions">
+                    <button class="btn btn-full" onclick="openConfigModal()">Configure Tool</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Appointment Config Modal -->
+        <div id="configModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeConfigModal()">&times;</span>
+                <h2>Appointment Availability Tool Configuration</h2>
+                <p style="margin-bottom: 1.5rem;">Configure the API parameters for checking appointment availability.</p>
+                
+                <form id="configForm">
+                    <div class="form-group">
+                        <label for="toolName">Tool Name:</label>
+                        <input type="text" id="toolName" value="check_appointment_availability" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="toolDescription">Description:</label>
+                        <textarea id="toolDescription" readonly>Checks if a requested appointment time is available and suggests alternatives if not</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apiUrl">API URL:</label>
+                        <input type="text" id="apiUrl" value="https://multipleaisolutions.com.au/callmanager/admin/appointment_check.php">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apiFormat">Request Format:</label>
+                        <textarea id="apiFormat" readonly>{
+  "requested_date": "YYYY-MM-DD",
+  "requested_time": "HH:MM",
+  "client_id": 123
+}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="actionExample">Example Action JSON:</label>
+                        <textarea id="actionExample" rows="25">{
+  "name": "check_appointment_availability",
+  "description": "Checks if a requested appointment time is available and suggests alternatives if not",
+  "parameters": [
+    {
+      "name": "requested_date",
+      "description": "The date for the requested appointment (YYYY-MM-DD)",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requested_time",
+      "description": "The time for the requested appointment (HH:MM)",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "client_id",
+      "description": "The ID of the client (optional)",
+      "type": "number",
+      "required": false
+    }
+  ],
+  "return": {
+    "description": "Available status and alternative time slots",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "description": "Response status"
+      },
+      "is_available": {
+        "type": "boolean",
+        "description": "Whether the requested time is available"
+      },
+      "requested_datetime": {
+        "type": "string",
+        "description": "The requested date and time"
+      },
+      "alternative_slots": {
+        "type": "array",
+        "description": "Alternative available time slots"
+      }
+    }
+  }
+}</textarea>
+                    </div>
+                    
+                    <button type="button" class="btn" onclick="copyActionJson()">Copy Action JSON</button>
+                </form>
+            </div>
+        </div>
+        
+        <footer>
+            <p>ElevenLabs Integration Tools &copy; 2025</p>
+        </footer>
+    </div>
+    
+    <script>
+        function openConfigModal() {
+            document.getElementById('configModal').style.display = 'block';
+        }
+        
+        function closeConfigModal() {
+            document.getElementById('configModal').style.display = 'none';
+        }
+        
+        function copyActionJson() {
+            const actionJson = document.getElementById('actionExample');
+            actionJson.select();
+            document.execCommand('copy');
+            
+            // Show temporary success message
+            const button = document.querySelector('#configModal .btn');
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+        
+        // Close modal if user clicks outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('configModal');
+            if (event.target == modal) {
+                closeConfigModal();
+            }
+        }
+    </script>
+</body>
+</html>

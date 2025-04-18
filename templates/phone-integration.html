@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElevenLabs Phone Integration</title>
+    <style>
+        /* Same styles as before */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #4a5568;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4c51bf;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #434190;
+        }
+        .code-block {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>ElevenLabs Phone Integration</h1>
+
+    <div class="container">
+        <!-- Step 1: Create Phone Number -->
+        <div class="step-content active" id="step1">
+            <h2>Step 1: Create Phone Number</h2>
+            <div class="form-group">
+                <label for="apiKey1">ElevenLabs API Key:</label>
+                
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" placeholder="+1234567890">
+            </div>
+            <div class="form-group">
+                <label for="label">Label:</label>
+                <input type="text" id="label" placeholder="My Phone Number">
+            </div>
+            <div class="form-group">
+                <label for="sid">SID:</label>
+                
+            </div>
+            <div class="form-group">
+                <label for="token">Token:</label>
+                
+            </div>
+            <button id="createPhoneBtn">Create Phone Number</button>
+            <div id="phoneResponse" class="response"></div>
+
+            <!-- Code block for curl requests -->
+            <div class="code-block">
+                <h3>Update Phone Number (PATCH request):</h3>
+                <button id="updatePhoneBtn">Update Phone Number</button>
+                <pre id="updateCurlCommand"></pre>
+            </div>
+
+            <div class="code-block">
+                <h3>Get All Phone Numbers (GET request):</h3>
+                <button id="getPhoneNumbersBtn">Fetch All Phone Numbers</button>
+                <pre id="getCurlCommand"></pre>
+            </div>
+
+            <div class="navigation">
+                <div></div>
+                <button id="nextToStep2" disabled>Next Step &rarr;</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Test Agent Call -->
+<!-- Step 2: Talk to Agent via Web -->
+<div class="container">
+    <h2>Step 2: Talk to Agent</h2>
+    <div class="form-group">
+        <label for="webAgentId">Agent ID:</label>
+        <input type="text" id="webAgentId" value="SwE3r1CkZtMa1Bh59Ucl" placeholder="e.g. SwE3r1CkZtMa1Bh59Ucl">
+    </div>
+    <button id="talkToAgentWebBtn">Call Voice Bot</button>
+</div>
+
+    <script>
+        // Step 1: Create Phone Number
+        document.getElementById('createPhoneBtn').addEventListener('click', function() {
+            const apiKey = "sk_a25b9c0aeb6381cc728ac97f54113fae13a52a4f72d88b2b";
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const label = document.getElementById('label').value;
+            const sid = "AC6eae45a978be107046ea3697bfd015f8";
+            const token = "ef6c3d74d0224c4729072c221efa7fe4";
+
+            if (!apiKey || !phoneNumber || !label || !sid || !token) {
+                alert('Please fill in all the fields.');
+                return;
+            }
+
+            const payload = {
+                phone_number: phoneNumber,
+                label: label,
+                sid: sid,
+                token: token
+            };
+
+            // Execute the equivalent curl command for creating phone number via fetch API
+            const createPhoneUrl = "https://api.elevenlabs.io/v1/convai/phone-numbers/create";
+
+            fetch(createPhoneUrl, {
+                method: 'POST',
+                headers: {
+                    'xi-api-key': "sk_a25b9c0aeb6381cc728ac97f54113fae13a52a4f72d88b2b",
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('phoneResponse').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('phoneResponse').style.display = 'block';
+            })
+            .catch(error => {
+                document.getElementById('phoneResponse').textContent = `Error: ${error}`;
+                document.getElementById('phoneResponse').style.display = 'block';
+            });
+        });
+
+        // Step 2: Update Phone Number (PATCH request)
+        document.getElementById('updatePhoneBtn').addEventListener('click', function() {
+            const apiKey = "sk_a25b9c0aeb6381cc728ac97f54113fae13a52a4f72d88b2b";
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const agentId = ""; // Add the appropriate agent ID
+
+            const updatePhoneUrl = `https://api.elevenlabs.io/v1/convai/phone-numbers/${phoneNumber}`;
+
+            fetch(updatePhoneUrl, {
+                method: 'PUT',
+                headers: {
+                    'xi-api-key': apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ agent_id: agentId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('updateCurlCommand').textContent = `Response: ${JSON.stringify(data, null, 2)}`;
+            })
+            .catch(error => {
+                document.getElementById('updateCurlCommand').textContent = `Error: ${error}`;
+            });
+        });
+
+        // Step 3: Fetch All Phone Numbers (GET request)
+        document.getElementById('getPhoneNumbersBtn').addEventListener('click', function() {
+            const apiKey = "sk_a25b9c0aeb6381cc728ac97f54113fae13a52a4f72d88b2b"
+
+            const getPhoneNumbersUrl = "https://api.elevenlabs.io/v1/convai/phone-numbers/";
+
+            fetch(getPhoneNumbersUrl, {
+                method: 'GET',
+                headers: {
+                    'xi-api-key': apiKey
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('getCurlCommand').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('getCurlCommand').textContent = `Error: ${error}`;
+            });
+        });
+
+ // Open Web Voice Bot UI
+document.getElementById('talkToAgentWebBtn').addEventListener('click', function () {
+    const agentId = document.getElementById('webAgentId').value;
+    if (!agentId) {
+        alert("Please enter an Agent ID.");
+        return;
+    }
+    const url = `https://elevenlabs.io/app/talk-to?agent_id=${agentId}`;
+    window.open(url, '_blank');
+});
+
+    </script>
+</body>
+</html>

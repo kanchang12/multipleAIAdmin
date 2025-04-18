@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Form Submissions{% endblock %}
+{% block header %}Form Submissions{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Form Submissions</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Form Data</th>
+                <th>Submitted At</th>
+                <th>Token</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+            <tr>
+                <td>{{ submission.id }}</td>
+                <td>
+                    {% set form_data = submission.form_data|from_json %}
+                    {% if form_data is mapping %}
+                        {% for key, value in form_data.items() %}
+                            <strong>{{ key }}:</strong> {{ value }}<br>
+                        {% endfor %}
+                    {% else %}
+                        {{ submission.form_data[:100] }}...
+                    {% endif %}
+                </td>
+                <td>{{ submission.submitted_at }}</td>
+                <td>{{ submission.token.token if submission.token else 'N/A' }}</td>
+                <td>
+                    <a href="{{ url_for('create_assistant', submission_id=submission.id) }}" class="btn btn-primary">Use for Assistant</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No form submissions found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

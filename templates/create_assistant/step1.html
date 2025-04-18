@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Create Assistant - Step 1{% endblock %}
+{% block header %}Step 1: Enter Business Information{% endblock %}
+
+{% block content %}
+<div class="progress-steps mb-4">
+    <div class="step active">1. Business Info</div>
+    <div class="step">2. User Details</div>
+    <div class="step">3. Phone & Voice</div>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label for="form_data">Business Details</label>
+            <textarea class="form-control" id="form_data" name="form_data" rows="10" 
+                      placeholder="Enter details like:
+business_name: Acme Services
+industry: Healthcare
+primary_services: Appointments, Consultations, Patient Inquiries
+contact_email: info@acmeservices.com
+phone_number: +1234567890
+business_hours: Mon-Fri 9am-5pm
+location: New York, NY
+website: www.acmeservices.com">{% if form_data %}{{ form_data }}{% endif %}</textarea>
+        </div>
+        <p class="text-muted">Format your details as key-value pairs with a colon between them (key: value), one per line.</p>
+        <button type="submit" name="generate_prompt" class="btn btn-primary">Generate Prompt</button>
+    </form>
+</div>
+{% endblock %}

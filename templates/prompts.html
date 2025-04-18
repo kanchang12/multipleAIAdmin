@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}AI Prompts{% endblock %}
+{% block header %}AI Prompts{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>AI Prompts</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Agent ID</th>
+                <th>Base Prompt</th>
+                <th>Generated Prompt</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prompt in prompts %}
+            <tr>
+                <td>{{ prompt.id }}</td>
+                <td>{{ prompt.agent_id or 'N/A' }}</td>
+                <td>
+                    {% set base_prompt = prompt.base_prompt|from_json %}
+                    {% if base_prompt is mapping %}
+                        {% for key, value in base_prompt.items() %}
+                            <strong>{{ key }}:</strong> {{ value }}<br>
+                        {% endfor %}
+                    {% else %}
+                        {{ prompt.base_prompt[:100] }}...
+                    {% endif %}
+                </td>
+                <td>{{ prompt.generated_prompt[:100] }}...</td>
+                <td>{{ prompt.created_at }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No prompts found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

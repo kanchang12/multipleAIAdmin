@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Create Assistant - Step 3{% endblock %}
+{% block header %}Step 3: Link Phone Number & Voice{% endblock %}
+
+{% block content %}
+<div class="progress-steps mb-4">
+    <div class="step completed">1. Business Info</div>
+    <div class="step completed">2. User Details</div>
+    <div class="step active">3. Phone & Voice</div>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="phone_number">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone_number" name="phone_number" placeholder="+1234567890">
+                    <small class="text-muted">Optional: Link a phone number for voice calls.</small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="voice_id">Voice</label>
+                    <select class="form-control" id="voice_id" name="voice_id">
+                        {% for voice in voices %}
+                            <option value="{{ voice.id }}">{{ voice.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <button type="submit" name="complete_setup" class="btn btn-success">Complete Setup</button>
+    </form>
+</div>
+{% endblock %}

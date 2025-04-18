@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElevenLabs Complete Setup</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #4a5568;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .step {
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 120px;
+            font-family: monospace;
+        }
+        button {
+            background-color: #4c51bf;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #434190;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .code-block {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            border-bottom: 3px solid #4c51bf;
+            color: #4c51bf;
+            font-weight: 600;
+        }
+        .step-content {
+            display: none;
+        }
+        .step-content.active {
+            display: block;
+        }
+        .status {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .success {
+            color: #48bb78;
+        }
+        .error {
+            color: #e53e3e;
+        }
+        .link-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #48bb78;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        #copyPythonBtn, #copyAgentLinkBtn {
+            background-color: #718096;
+            padding: 8px 12px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ElevenLabs Integration Setup</h1>
+
+    <div class="tabs">
+        <div class="tab active" data-step="1">Step 1: Create Phone Number</div>
+        <div class="tab" data-step="2">Step 2: Update Phone Number</div>
+        <div class="tab" data-step="3">Step 3: Generate Talk-to Link</div>
+    </div>
+
+    <div class="container">
+        <!-- Step 2: Create Phone Number -->
+        <div class="step-content active" id="step1">
+            <h2>Step 1: Create Phone Number</h2>
+            <div class="form-group">
+                <label for="apiKey1">ElevenLabs API Key:</label>
+                <input type="text" id="apiKey1" placeholder="sk_...">
+            </div>
+            
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" placeholder="+1234567890">
+            </div>
+            
+            <div class="form-group">
+                <label for="label">Label:</label>
+                <input type="text" id="label" placeholder="My Phone Number">
+            </div>
+            
+            <div class="form-group">
+                <label for="sid">SID:</label>
+                <input type="text" id="sid" placeholder="Enter SID">
+            </div>
+            
+            <div class="form-group">
+                <label for="token">Token:</label>
+                <input type="text" id="token" placeholder="Enter token">
+            </div>
+            
+            <button id="createPhoneBtn">Create Phone Number</button>
+            <div id="phoneResponse" class="response"></div>
+
+            <div class="code-block">
+                <h3>Equivalent curl command:</h3>
+                <pre id="phoneCurlCommand"></pre>
+            </div>
+
+            <div class="navigation">
+                <div></div>
+                <button id="nextToStep2" disabled>Next Step →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Update Phone Number -->
+        <div class="step-content" id="step2">
+            <h2>Step 2: Update Phone Number with Agent ID</h2>
+            <p class="info-text">This step allows you to connect your phone number to an agent using either Python code or a curl command.</p>
+            <div class="form-group">
+                <label for="apiKey2">ElevenLabs API Key:</label>
+                <input type="text" id="apiKey2" placeholder="sk_...">
+            </div>
+            
+            <div class="form-group">
+                <label for="phoneNumberId">Phone Number ID:</label>
+                <input type="text" id="phoneNumberId" placeholder="TeaqRRdTcIfIu2i7BYfT">
+            </div>
+            
+            <div class="form-group">
+                <label for="agentId">Agent ID:</label>
+                <input type="text" id="agentId" placeholder="Enter agent ID">
+            </div>
+            
+            <button id="updatePhoneBtn">Update Phone Number</button>
+            <div id="updateResponse" class="response"></div>
+
+            <div class="form-group">
+                <label for="pythonCode">Python Code:</label>
+                <textarea id="pythonCode" readonly></textarea>
+                <button id="copyPythonBtn">Copy Code</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="curlUpdateCommand">Curl Command (Alternative to Python):</label>
+                <textarea id="curlUpdateCommand" readonly></textarea>
+                <button id="copyCurlUpdateBtn">Copy Curl</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="widgetCommand">Get Agent Widget Curl Command:</label>
+                <textarea id="widgetCommand" readonly></textarea>
+                <button id="copyWidgetBtn">Copy Curl</button>
+            </div>
+
+            <div class="navigation">
+                <button id="backToStep1">← Previous Step</button>
+                <button id="nextToStep3" disabled>Next Step →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Generate Talk-to Link -->
+        <div class="step-content" id="step3">
+            <h2>Step 3: Generate Talk-to Link</h2>
+            <div class="form-group">
+                <label for="agentIdForLink">Agent ID:</label>
+                <input type="text" id="agentIdForLink" placeholder="Enter agent ID">
+            </div>
+            
+            <button id="generateLinkBtn">Generate Link</button>
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="talkToLink">Talk-to Link:</label>
+                <input type="text" id="talkToLink" readonly>
+                <button id="copyAgentLinkBtn">Copy Link</button>
+            </div>
+            
+            <div id="linkPreview" style="margin-top: 20px;">
+                <a id="talkToLinkBtn" class="link-button" target="_blank">Open Link in New Tab</a>
+            </div>
+
+            <div class="navigation">
+                <button id="backToStep2">← Previous Step</button>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables to store response data
+        let phoneNumberIdFromResponse = "";
+        let agentIdFromStep2 = "";
+        
+        // Initialize tab navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const stepNumber = tab.getAttribute('data-step');
+                activateTab(stepNumber);
+            });
+        });
+        
+        function activateTab(stepNumber) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            document.querySelector(`.tab[data-step="${stepNumber}"]`).classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+        }
+        
+        // Copy API key between steps
+        document.getElementById('apiKey1').addEventListener('input', function() {
+            document.getElementById('apiKey2').value = this.value;
+        });
+        
+        // Step 1: Create Phone Number
+        document.getElementById('createPhoneBtn').addEventListener('click', function() {
+            const apiKey = document.getElementById('apiKey1').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const label = document.getElementById('label').value;
+            const sid = document.getElementById('sid').value;
+            const token = document.getElementById('token').value;
+            
+            if (!apiKey) {
+                alert('Please enter your ElevenLabs API key');
+                return;
+            }
+            
+            // Build request payload
+            const payload = {
+                phone_number: phoneNumber,
+                label: label,
+                sid: sid,
+                token: token
+            };
+            
+            // Update curl command display
+            const curlCmd = `curl -X POST https://api.elevenlabs.io/v1/convai/phone-numbers/create \\
+     -H "xi-api-key: ${apiKey}" \\
+     -H "Content-Type: application/json" \\
+     -d '${JSON.stringify(payload, null, 2)}'`;
+            
+            document.getElementById('phoneCurlCommand').textContent = curlCmd;
+            
+            // Make API request
+            fetch('https://api.elevenlabs.io/v1/convai/phone-numbers/create', {
+                method: 'POST',
+                headers: {
+                    'xi-api-key': apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const responseElement = document.getElementById('phoneResponse');
+                responseElement.textContent = JSON.stringify(data, null, 2);
+                responseElement.style.display = 'block';
+                
+                // Store phone number ID for next step if available
+                if (data.phone_number_id) {
+                    phoneNumberIdFromResponse = data.phone_number_id;
+                    document.getElementById('phoneNumberId').value = phoneNumberIdFromResponse;
+                    
+                    // Enable next button
+                    document.getElementById('nextToStep2').disabled = false;
+                }
+            })
+            .catch(error => {
+                const responseElement = document.getElementById('phoneResponse');
+                responseElement.textContent = `Error: ${error.message}`;
+                responseElement.style.display = 'block';
+            });
+        });
+        
+        // Step 2: Update Phone Number
+        document.getElementById('updatePhoneBtn').addEventListener('click', function() {
+            const apiKey = document.getElementById('apiKey2').value;
+            const phoneNumberId = document.getElementById('phoneNumberId').value;
+            const agentId = document.getElementById('agentId').value;
+            
+            if (!apiKey) {
+                alert('Please enter your ElevenLabs API key');
+                return;
+            }
+            
+            if (!phoneNumberId) {
+                alert('Please enter the Phone Number ID');
+                return;
+            }
+            
+            if (!agentId) {
+                alert('Please enter the Agent ID');
+                return;
+            }
+            
+            // Store agent ID for step 3
+            agentIdFromStep2 = agentId;
+            document.getElementById('agentIdForLink').value = agentIdFromStep2;
+            
+            // Generate and display Python code
+            const pythonCode = `from elevenlabs import ElevenLabs
+client = ElevenLabs(api_key="${apiKey}")        
+client.conversational_ai.update_phone_number(
+    phone_number_id="${phoneNumberId}",
+    agent_id="${agentId}"
+)`;
+            
+            document.getElementById('pythonCode').value = pythonCode;
+            
+            // Generate curl update command
+            const curlUpdateCmd = `curl -X PATCH https://api.elevenlabs.io/v1/convai/phone-numbers/${phoneNumberId} \\
+     -H "xi-api-key: ${apiKey}" \\
+     -H "Content-Type: application/json" \\
+     -d '{
+  "agent_id": "${agentId}"
+}'`;
+            
+            document.getElementById('curlUpdateCommand').value = curlUpdateCmd;
+            
+            // Generate widget curl command
+            const widgetCmd = `curl https://api.elevenlabs.io/v1/convai/agents/${agentId}/widget \\
+     -H "xi-api-key: ${apiKey}"`;
+            
+            document.getElementById('widgetCommand').value = widgetCmd;
+            
+            // Make API request (this is pseudo-code as we don't actually call this from browser)
+            document.getElementById('updateResponse').textContent = "To execute the Python code, please copy it and run in your Python environment.\n\nThe code will update your phone number to use the specified agent.";
+            document.getElementById('updateResponse').style.display = 'block';
+            
+            // Enable next button
+            document.getElementById('nextToStep3').disabled = false;
+        });
+        
+        // Step 3: Generate Talk-to Link
+        document.getElementById('generateLinkBtn').addEventListener('click', function() {
+            const agentId = document.getElementById('agentIdForLink').value;
+            
+            if (!agentId) {
+                alert('Please enter the Agent ID');
+                return;
+            }
+            
+            const talkToLink = `https://elevenlabs.io/app/talk-to?agent_id=${agentId}`;
+            
+            document.getElementById('talkToLink').value = talkToLink;
+            
+            // Update link button
+            const linkButton = document.getElementById('talkToLinkBtn');
+            linkButton.href = talkToLink;
+            linkButton.style.display = 'inline-block';
+        });
+        
+        // Navigation buttons
+        document.getElementById('nextToStep2').addEventListener('click', function() {
+            activateTab('2');
+        });
+        
+        document.getElementById('nextToStep3').addEventListener('click', function() {
+            activateTab('3');
+        });
+        
+        document.getElementById('backToStep1').addEventListener('click', function() {
+            activateTab('1');
+        });
+        
+        document.getElementById('backToStep2').addEventListener('click', function() {
+            activateTab('2');
+        });
+        
+        // Copy buttons
+        document.getElementById('copyPythonBtn').addEventListener('click', function() {
+            const pythonCode = document.getElementById('pythonCode');
+            pythonCode.select();
+            document.execCommand('copy');
+            this.textContent = "Copied!";
+            setTimeout(() => {
+                this.textContent = "Copy Code";
+            }, 2000);
+        });
+        
+        document.getElementById('copyCurlUpdateBtn').addEventListener('click', function() {
+            const curlCmd = document.getElementById('curlUpdateCommand');
+            curlCmd.select();
+            document.execCommand('copy');
+            this.textContent = "Copied!";
+            setTimeout(() => {
+                this.textContent = "Copy Curl";
+            }, 2000);
+        });
+        
+        document.getElementById('copyWidgetBtn').addEventListener('click', function() {
+            const widgetCmd = document.getElementById('widgetCommand');
+            widgetCmd.select();
+            document.execCommand('copy');
+            this.textContent = "Copied!";
+            setTimeout(() => {
+                this.textContent = "Copy Curl";
+            }, 2000);
+        });
+        
+        document.getElementById('copyAgentLinkBtn').addEventListener('click', function() {
+            const linkInput = document.getElementById('talkToLink');
+            linkInput.select();
+            document.execCommand('copy');
+            this.textContent = "Copied!";
+            setTimeout(() => {
+                this.textContent = "Copy Link";
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
