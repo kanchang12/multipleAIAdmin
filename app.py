@@ -109,6 +109,12 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def index():
+    provided_token = request.args.get('token')
+    expected_token = os.getenv('ACCESS_TOKEN')
+    
+    if not provided_token or provided_token != expected_token:
+        return 'Unauthorized Access', 401
+    
     return render_template_string(HTML_TEMPLATE)
 
 @app.route('/generate_prompt', methods=['POST'])
